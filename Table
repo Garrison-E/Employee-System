@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Employee Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Employee Manager</h1>
+
+    <h2>Add Employee</h2>
+    <form id="employeeForm">
+        <div class="form-group">
+            <label for="name">Employee Name:</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="code">4-Digit Code:</label>
+            <input type="text" id="code" maxlength="4" required>
+        </div>
+        <button type="submit">Add Employee</button>
+    </form>
+
+    <h2>Employee List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTableBody">
+            <!-- Employees will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <script>
+        const employeeForm = document.getElementById("employeeForm");
+        const employeeTableBody = document.getElementById("employeeTableBody");
+
+        // Employee list (stored in memory for simplicity)
+        const employees = [];
+
+        // Handle form submission
+        employeeForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Get form values
+            const name = document.getElementById("name").value.trim();
+            const code = document.getElementById("code").value.trim();
+
+            // Validate inputs
+            if (!name || code.length !== 4 || isNaN(code)) {
+                alert("Please enter a valid name and a 4-digit code.");
+                return;
+            }
+
+            // Check if the code is already in use
+            const codeExists = employees.some(employee => employee.code === code);
+            if (codeExists) {
+                alert("This code is already in use. Please choose another.");
+                return;
+            }
+
+            // Add employee to the list
+            employees.push({ name, code });
+            updateEmployeeTable();
+
+            // Clear the form
+            employeeForm.reset();
+        });
+
+        // Update the employee table
+        function updateEmployeeTable() {
+            employeeTableBody.innerHTML = "";
+
+            employees.forEach((employee, index) => {
+                const row = document.createElement("tr");
+
+                const nameCell = document.createElement("td");
+                nameCell.textContent = employee.name;
+
+                const codeCell = document.createElement("td");
+                codeCell.textContent = employee.code;
+
+                const actionCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.addEventListener("click", function() {
+                    employees.splice(index, 1); // Remove the employee from the list
+                    updateEmployeeTable(); // Refresh the table
+                });
+                actionCell.appendChild(deleteButton);
+
+                row.appendChild(nameCell);
+                row.appendChild(codeCell);
+                row.appendChild(actionCell);
+
+                employeeTableBody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
